@@ -201,7 +201,7 @@ function load_cams($content = '') {
 
 </div>
 
-<img src="?op=day"><img src="?op=week">
+<a href="/stats">Looking for the temperature in the shop? Try here.</a>
 
 EOD
 		;
