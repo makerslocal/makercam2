@@ -69,6 +69,7 @@ function cam_init() {
 		header("Content-type: image/jpeg");
 		if ( $param <= 0 or $level <= 1 ) { //parameter is invalid or we aren't logged in
 			$param = 4; //roll-up door by default
+			$param = 3; //soda machine
 		}
 		$url = Settings::ZM_URL . "/cgi-bin/nph-zms?mode=single&monitor=" . $param;
 		if ( $op == "thumb" ) {
@@ -164,12 +165,12 @@ function load_cams($content = '') {
 			});
 		}
 		
-		jQuery.get("?op=camcount").done(function(data) {
+		jQuery.get("?op=camcount&buster=" + new Date().getTime()).done(function(data) {
 			let camCount = Number(data);
 			if ( camCount > 0 ) {
 				//The user has access to some cameras
 				let eControls = document.getElementById("makercam-controls");
-				eControls.innerHTML = "";
+				eControls.innerHTML = ""; //Remove the message about logging in
 				let selectThisCamera = function() {
 					document.getElementById("makercam-view-main").src = "?op=jpeg&camera=" + this.dataset.cameraId;
 					refreshImages();
