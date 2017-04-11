@@ -88,7 +88,7 @@ function cam_init() {
 		}
 		exit;
 	} elseif ( $op == "version" ) {
-		echo "2";
+		echo "3";
 		exit;
 	}
 	//////////// LEGACY FOLLOWS /////////////
