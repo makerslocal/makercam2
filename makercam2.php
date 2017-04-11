@@ -145,32 +145,15 @@ function load_cams($content = '') {
 
 	var version = null;
 
-	jQuery.get("?op=camcount").done(function(data) {
-		let camCount = Number(data);
-		if ( camCount > 0 ) {
-			//The user has access to some cameras
-			let eControls = document.getElementById("makercam-controls");
-			eControls.innerHTML = "";
-			let selectThisCamera = function() {
-				document.getElementById("makercam-view-main").src = "?op=jpeg&camera=" + this.dataset.cameraId;
-			};
-			for ( let i = 1; i <= camCount; i++ ) {
-				console.log("Adding thumb for camera " + i);
-				let el = document.createElement("img");
-				el.className = "makercam-view";
-				el.dataset.cameraId = i;
-			 	el.src = "?op=thumb&camera=" + i;
-				el.onclick = selectThisCamera;
-				eControls.appendChild(el);
-			}
-		}
-		
-		setInterval(function() {
+	jQuery(document).ready(function() {
+		function refreshImages() {
 			let buster = new Date().getTime();
-			for ( image of document.getElementsByClassName("makercam-view") ) {
-				image.src = image.src.split('#')[0] + "#" + buster;
+			images = document.getElementsByClassName("makercam-view");
+			for ( let i=0; i<images.length; i++ ) {
+				image = images[i];
+				image.src = image.src.split('&buster')[0] + "&buster=" + buster;
 			}
-			jQuery.get("?op=version").done(function(data) {
+			jQuery.get("?op=version&buster=" + new Date().getTime()).done(function(data) {
 				console.log("server version: " + data);
 				if ( version != null && version != data ) {
 					console.log("we're only " + version + " - time to change version to " + data);
@@ -179,8 +162,32 @@ function load_cams($content = '') {
 					version = data;
 				}
 			});
-				
-		}, 15000);
+		}
+		
+		jQuery.get("?op=camcount").done(function(data) {
+			let camCount = Number(data);
+			if ( camCount > 0 ) {
+				//The user has access to some cameras
+				let eControls = document.getElementById("makercam-controls");
+				eControls.innerHTML = "";
+				let selectThisCamera = function() {
+					document.getElementById("makercam-view-main").src = "?op=jpeg&camera=" + this.dataset.cameraId;
+					refreshImages();
+				};
+				for ( let i = 1; i <= camCount; i++ ) {
+					console.log("Adding thumb for camera " + i);
+					let el = document.createElement("img");
+					el.className = "makercam-view";
+					el.dataset.cameraId = i;
+				 	el.src = "?op=thumb&camera=" + i;
+					el.onclick = selectThisCamera;
+					eControls.appendChild(el);
+				}
+			}
+			
+			setInterval(refreshImages, 10000);
+			
+		});
 	});
 		
 	</script>
