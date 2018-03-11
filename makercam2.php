@@ -81,12 +81,24 @@ function cam_init() {
 		print get_userss();
 		exit;
 	} elseif ( $op == "camcount" ) {
+		//This count is deprecated, as it doesn't really tell you anything.
+		//You can have 8 cameras and they aren't IDs 1 through 8...
 		if ( !($level > 1) ) {
 			echo 0;
 		} else {
 			$obj = json_decode(file_get_contents(Settings::ZM_URL . "/api/monitors.json"));
 			echo count($obj->monitors);
 		}
+		exit;
+	} elseif ( $op == "camids" ) {
+		$arr = array();
+		if ( $level > 1 ) {
+			$obj = json_decode(file_get_contents(Settings::ZM_URL . "/api/monitors.json"));
+			foreach ( $obj->monitors as $monitor ) {
+				$arr[] = $monitor->Monitor->Id;
+			}
+		}
+		echo(json_encode($arr));
 		exit;
 	} elseif ( $op == "version" ) {
 		echo "3";
@@ -165,9 +177,8 @@ function load_cams($content = '') {
 			});
 		}
 		
-		jQuery.get("?op=camcount&buster=" + new Date().getTime()).done(function(data) {
-			let camCount = Number(data);
-			if ( camCount > 0 ) {
+		jQuery.getJSON("?op=camids&buster=" + new Date().getTime()).done(function(camIds) {
+			if ( camIds.length > 0 ) {
 				//The user has access to some cameras
 				let eControls = document.getElementById("makercam-controls");
 				eControls.innerHTML = ""; //Remove the message about logging in
@@ -175,12 +186,12 @@ function load_cams($content = '') {
 					document.getElementById("makercam-view-main").src = "?op=jpeg&camera=" + this.dataset.cameraId;
 					refreshImages();
 				};
-				for ( let i = 1; i <= camCount; i++ ) {
-					console.log("Adding thumb for camera " + i);
+				for ( let i = 0; i < camIds.length; i++ ) {
+					console.log("Adding thumb for camera " + camIds[i]);
 					let el = document.createElement("img");
 					el.className = "makercam-view";
-					el.dataset.cameraId = i;
-				 	el.src = "?op=thumb&camera=" + i;
+					el.dataset.cameraId = camIds[i];
+				 	el.src = "?op=thumb&camera=" + camIds[i];
 					el.onclick = selectThisCamera;
 					eControls.appendChild(el);
 				}
