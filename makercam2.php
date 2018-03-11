@@ -3,7 +3,7 @@
 Plugin Name: MakerCam 2
 Plugin URI: http://makerslocal.org
 Description: Shows cameras from a zoneminder install
-Version: 2.1
+Version: 2.2
 Author: Hunter Fuller, Matt Robinson
 Author URI: https://256.makerslocal.org/wiki/Network
 */
@@ -101,7 +101,7 @@ function cam_init() {
 		echo(json_encode($arr));
 		exit;
 	} elseif ( $op == "version" ) {
-		echo "3";
+		echo "4";
 		exit;
 	}
 	//////////// LEGACY FOLLOWS /////////////
